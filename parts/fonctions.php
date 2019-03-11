@@ -20,4 +20,11 @@ function affiche($valeur){
   }
 }
 
+// FONCTION ERREURS
+function erreurs($array, $num){
+  if(isset($array[$num])){
+    echo '<p class="erreurs">' .$array[$num].'</p>';
+  }
+}
+
  ?>

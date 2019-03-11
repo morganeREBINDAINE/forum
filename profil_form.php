@@ -8,7 +8,9 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
 <html lang="fr" dir="ltr">
   <?php include 'parts/head.php'; ?>
   <body>
-    <?php include 'parts/header.php'; ?>
+    <?php include 'parts/header.php';
+    include 'parts/fonctions.php';?>
+
     <main>
       <?php
         $req=$bdd->query('SELECT *, DATE_FORMAT(date_naissance, "%d/%m/%Y") as date_naissance
@@ -20,6 +22,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
        ?>
       <h3>Complétez ou modifiez votre profil</h3>
       <?php
+      $erreurs=array();
         if(isset($_POST['nom'], $_POST['prenom'], $_POST['date_naissance'], $_POST['ville'], $_POST['passions'], $_POST['description'], $_POST['mail'])){
           $mail=trim(strtolower(htmlspecialchars($_POST['mail'])));
           $nom=trim(ucfirst(strtolower(htmlspecialchars($_POST['nom']))));
@@ -28,7 +31,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           $ville=trim(ucfirst(strtolower(htmlspecialchars($_POST['ville']))));
           $passions=trim(ucfirst(strtolower(htmlspecialchars($_POST['passions']))));
           $description=trim(htmlspecialchars($_POST['description']));
-          $erreurs=array();
+
 
           // RECHERCHE DES ERREURS
 
@@ -95,20 +98,21 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
        ?>
       <form class="form_profil" action="profil_form.php" method="post">
         <label>Votre prénom :</label><input type="text" name="prenom" placeholder="ex: Walter" value="<?php if(isset($donneesActuelles['prenom'])){echo $donneesActuelles['prenom'];} ?>">
-        <?php if(isset($erreurs[1])){echo '<p class="erreurs">' .$erreurs[1].'</p>';} ?>
+        <?php erreurs($erreurs, 1);
+        ?>
         <label>Votre nom :</label><input type="text" name="nom" placeholder="ex: White" value="<?php if(isset($donneesActuelles['nom'])){echo $donneesActuelles['nom'];} ?>">
-        <?php if(isset($erreurs[2])){echo '<p class="erreurs">' .$erreurs[2].'</p>';} ?>
+        <?php erreurs($erreurs, 2); ?>
         <label>Votre date de naissance :</label><input type="text" name="date_naissance" placeholder="ex: 07/09/1959" value="<?php if(isset($donneesActuelles['date_naissance'])){echo $donneesActuelles['date_naissance'];} ?>">
-        <?php if(isset($erreurs[3])){echo '<p class="erreurs">' .$erreurs[3].'</p>';} ?>
+        <?php erreurs($erreurs, 3); ?>
         <label>Votre mail :</label><input type="text" name="mail" placeholder="walter_white@breaking.bad" value="<?php echo $donneesActuelles['mail'];
          ?>" required>
-         <?php if(isset($erreurs[4])){echo '<p class="erreurs">' .$erreurs[4].'</p>';} ?>
+         <?php erreurs($erreurs, 4); ?>
         <label>Votre ville :</label><input type="text" name="ville" placeholder="ex: Albuquerque" value="<?php if(isset($donneesActuelles['ville'])){echo $donneesActuelles['ville'];} ?>">
-        <?php if(isset($erreurs[5])){echo '<p class="erreurs">' .$erreurs[5].'</p>';} ?>
+        <?php erreurs($erreurs, 5); ?>
         <label>Vos centres d'intérêt :</label><textarea name="passions" placeholder="ex: Le travail manuel..."><?php if(isset($donneesActuelles['passions'])){echo $donneesActuelles['passions'];} ?></textarea>
-        <?php if(isset($erreurs[6])){echo '<p class="erreurs">' .$erreurs[6].'</p>';} ?>
+        <?php erreurs($erreurs, 6); ?>
         <label>Une petite description : </label><textarea name="description" placeholder="ex: Je suis un professeur de chimie passionné et impliqué ;)"><?php if(isset($donneesActuelles['description'])){echo $donneesActuelles['description'];} ?></textarea>
-        <?php if(isset($erreurs[7])){echo '<p class="erreurs">' .$erreurs[7].'</p>';} ?>
+        <?php erreurs($erreurs, 7); ?>
         <input type="submit" value="C'est parti !">
       </form>
     </main>
