@@ -39,8 +39,8 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
             $erreurs[2]= 'Nom invalide<br>';
           }
           if(!empty($date_naissance)){
-              if(!preg_match('#^([0-9]{1,2}/){1,2}[0-9]{4}$#', $date_naissance)){
-                $erreurs[3]= 'Format souhaité jour/mois/année';
+              if(!preg_match('#^([0-9]{2}/){2}[0-9]{4}$#', $date_naissance)){
+                $erreurs[3]= 'Format souhaité JJ/MM/AAAA';
               }
               else{
                 $date_naissance=preg_replace('#/#', '-', $date_naissance);
@@ -55,9 +55,11 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
                 elseif(strtotime($date_naissance)>strtotime(date('d-m-Y'))){
                   $erreurs[3]= 'Euh... La date entrée est supérieure à aujourd\'hui!';
                 }else{
-                  $date_naissance= preg_replace('#^([0-9]{2})-([0-9]{2})-([0-9]{4})$#', '$3-$2-$1', $date_naissance);
+                  $date_naissance= preg_replace('#^([0-9]{2})-([0-9]{2})-([0-9]{4})$#', '"$3-$2-$1"', $date_naissance);
                 }
               }
+          } else{
+            $date_naissance='NULL';
           }
           if(empty($mail)){
             $erreurs[4]= 'Le mail est obligatoire!';
@@ -86,7 +88,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           if(!empty($erreurs)){
             $nbErreurs=count($erreurs);
           } else{
-            $req=$bdd->query('UPDATE profils SET prenom="'.$prenom.'", nom="'.$nom.'", date_naissance="'.$date_naissance.'", ville="'.$ville.'", passions="'.$passions.'", description="'.$description.'" WHERE id_profil='.$_SESSION['id']);
+            $req=$bdd->query('UPDATE profils SET prenom="'.$prenom.'", nom="'.$nom.'", date_naissance='.$date_naissance.', ville="'.$ville.'", passions="'.$passions.'", description="'.$description.'" WHERE id_profil='.$_SESSION['id']);
             header('Location:profil.php');
           }
         }
