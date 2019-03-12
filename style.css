@@ -103,6 +103,7 @@ main{
   margin: auto;
   text-align: center;
   padding-top: 70px;
+  padding-bottom: 50px;
 }
 
 main span {
@@ -199,6 +200,11 @@ input[type=checkbox]:checked {
 
 /* profil */
 
+img[alt="avatar"]{
+  height: 150px;
+  margin: 40px 0 20px;
+}
+
 div.infos{
   display: flex;
   justify-content: center;
@@ -214,16 +220,17 @@ div.infos{
   font-weight: bold;
   text-transform: capitalize;
   margin: 0;
+  padding-right: 10px;
 }
 a[href="profil_form.php"], a[href="profil_mdp.php"]{
-  margin: 40px 0 70px;
+  margin: 40px 0 0px;
   display: block;
 }
 
  .infos p{
   width: 50%;
   text-align: left;
-  padding-left: 20px;
+  padding-left: 10px;
   font-size: 18px;
   margin: 0;
 }
@@ -256,6 +263,10 @@ label::after{
   position: absolute;
   bottom: -3px;
   right: 100px;
+}
+
+input[id="avatar"]{
+  text-align: center;
 }
 
 /* FOOTER */

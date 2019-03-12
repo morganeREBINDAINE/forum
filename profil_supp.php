@@ -25,7 +25,7 @@
         $req=$bdd->query('DELETE FROM identifiants WHERE id='.$_SESSION['id']);
         $req=$bdd->query('DELETE FROM profils WHERE id_profil='.$_SESSION['id']);
 
-        header('Location:index.php?s=1');
+        header('Location:deconnexion.php?s=1');
       } ?>
 
     </main>

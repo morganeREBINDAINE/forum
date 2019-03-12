@@ -21,9 +21,10 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
         $donneesActuelles=$req->fetch();
        ?>
       <h3>Complétez ou modifiez votre profil</h3>
+
       <?php
       $erreurs=array();
-        if(isset($_POST['nom'], $_POST['prenom'], $_POST['date_naissance'], $_POST['ville'], $_POST['passions'], $_POST['description'], $_POST['mail'])){
+        if(isset($_POST['nom'], $_POST['prenom'], $_POST['date_naissance'], $_POST['ville'], $_POST['passions'], $_POST['description'], $_POST['mail'], $_FILES['avatar'])){
           $mail=trim(strtolower(htmlspecialchars($_POST['mail'])));
           $nom=trim(ucfirst(strtolower(htmlspecialchars($_POST['nom']))));
           $prenom=trim(ucfirst(strtolower(htmlspecialchars($_POST['prenom']))));
@@ -32,8 +33,41 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           $passions=trim(ucfirst(strtolower(htmlspecialchars($_POST['passions']))));
           $description=trim(htmlspecialchars($_POST['description']));
 
+          $a=$_FILES['avatar'];
+          $a_nom=$a['name'];
+          $a_doss=$a['tmp_name'];
+          $a_size=$a['size'];
+
+          $a_xt=strtolower(strrchr($a_nom, '.'));
+          $xt_autorise= array('.jpg', '.jpeg', '.png');
+
 
           // RECHERCHE DES ERREURS
+
+          if(!is_uploaded_file($a_doss)){
+            $erreurs[0]= 'Erreur lors du téléchargement de l\'avatar.';
+          }elseif(!in_array($a_xt, $xt_autorise)){
+            $erreurs[0]= 'Format acceptés : JPEG et PNG';
+          }elseif($a_size > 1048576){
+            $erreurs[0]= 'Image trop lourde (max 1Mo)';
+          }else{
+            list($a_w, $a_h)=getimagesize($a_doss);
+            $ratioImg=$a_w/$a_h;
+            $wmax=150;
+            $hmax=180;
+            if($wmax/$hmax > $ratioImg){
+              $wmax=$hmax*$ratioImg;
+            }else{
+              $hmax=$wmax/$ratioImg;
+            }
+
+            $src=imagecreatefromstring(file_get_contents($a_doss));
+            $min=imagecreatetruecolor($wmax, $hmax);
+            $path='min/'.time().'.png';
+            imagecopyresampled($min, $src, 0,0,0,0,$wmax,$hmax,$a_w,$a_h);
+            imagepng($min, $path);
+            $req=$bdd->query('UPDATE profils SET avatar="'.$path.'" WHERE id_profil='.$_SESSION['id']);
+          }
 
           if(!empty($prenom) AND !preg_match('#^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]{2,20}$#i', $prenom)){
             $erreurs[1]= 'Prénom invalide<br>';
@@ -87,19 +121,19 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           }
 
 
-          // SI LE FORMULAIRE COMPORTE DES ERREURS
-          if(!empty($erreurs)){
-            $nbErreurs=count($erreurs);
-          } else{
+          // ENVOI EN BDD
+          if(empty($erreurs)){
             $req=$bdd->query('UPDATE profils SET prenom="'.$prenom.'", nom="'.$nom.'", date_naissance='.$date_naissance.', ville="'.$ville.'", passions="'.$passions.'", description="'.$description.'" WHERE id_profil='.$_SESSION['id']);
             header('Location:profil.php');
           }
         }
        ?>
-      <form class="form_profil" action="profil_form.php" method="post">
+      <img src="<?php if(isset($donneesActuelles['avatar'])){echo $donneesActuelles['avatar'];}else{echo 'img/empty.png';} ?>" alt="avatar">
+      <form class="form_profil" action="profil_form.php" method="post" enctype="multipart/form-data">
+        <label for="avatar">Choisissez un avatar:</label><input type="file" name="avatar" id="avatar">
+        <?php erreurs($erreurs, 0); ?>
         <label>Votre prénom :</label><input type="text" name="prenom" placeholder="ex: Walter" value="<?php if(isset($donneesActuelles['prenom'])){echo $donneesActuelles['prenom'];} ?>">
-        <?php erreurs($erreurs, 1);
-        ?>
+        <?php erreurs($erreurs, 1);?>
         <label>Votre nom :</label><input type="text" name="nom" placeholder="ex: White" value="<?php if(isset($donneesActuelles['nom'])){echo $donneesActuelles['nom'];} ?>">
         <?php erreurs($erreurs, 2); ?>
         <label>Votre date de naissance :</label><input type="text" name="date_naissance" placeholder="ex: 07/09/1959" value="<?php if(isset($donneesActuelles['date_naissance'])){echo $donneesActuelles['date_naissance'];} ?>">

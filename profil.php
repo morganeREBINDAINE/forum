@@ -15,10 +15,13 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
       if(isset($_GET['mdp'])AND $_GET['mdp']=='modif'){
         echo 'Votre mot de passe a été modifié.<br><br>';
       }
+      $req=$bdd->query('SELECT avatar FROM profils WHERE id_profil='.$_SESSION['id']);
+      $donnees=$req->fetch();
       ?>
 
       <h3>Votre profil</h3>
       <a href="profil_form.php">Complétez ou modifiez vos informations</a>
+      <img src="<?php if(isset($donnees['avatar'])){echo $donnees['avatar'];}else{echo 'img/empty.png';} ?>" alt="avatar">
       <div class="infos">
         <h4>Pseudo :</h4>
         <p><?php affiche('pseudo'); ?></p>
