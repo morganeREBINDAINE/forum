@@ -48,7 +48,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
       </div>
       <div class="infos">
         <h4>âge :</h4>
-        <p><?php affiche('age'); ?></p>
+        <p><?php affiche('age'); ?> ans</p>
       </div>
       <div class="infos">
         <h4>Ville :</h4>

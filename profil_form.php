@@ -63,10 +63,16 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
                 $hmax=$wmax/$ratioImg;
               }
 
-              $src=imagecreatefromstring(file_get_contents($a_doss));
+              if($a_xt=='.png'){
+                $src=imagecreatefrompng($a_doss);
+              }else{
+                $src=imagecreatefromstring(file_get_contents($a_doss));
+              }
               $min=imagecreatetruecolor($wmax, $hmax);
               $path='min/'.time().'.png';
               imagecopyresampled($min, $src, 0,0,0,0,$wmax,$hmax,$a_w,$a_h);
+              $background = imagecolorallocate($min , 0, 0, 0);
+              imagecolortransparent($min, $background);
               imagepng($min, $path);
               $req=$bdd->query('UPDATE profils SET avatar="'.$path.'" WHERE id_profil='.$_SESSION['id']);
             }
@@ -131,6 +137,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           }
         }
        ?>
+
       <img src="<?php if(isset($donneesActuelles['avatar'])){echo $donneesActuelles['avatar'];}else{echo 'img/empty.png';} ?>" alt="avatar">
       <form class="form_profil" action="profil_form.php" method="post" enctype="multipart/form-data">
         <label for="avatar">Choisissez un avatar:</label><input type="file" name="avatar" id="avatar">
