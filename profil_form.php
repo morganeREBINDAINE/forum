@@ -37,6 +37,7 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
           $a_nom=$a['name'];
           $a_doss=$a['tmp_name'];
           $a_size=$a['size'];
+          $a_error=$a['error'];
 
           $a_xt=strtolower(strrchr($a_nom, '.'));
           $xt_autorise= array('.jpg', '.jpeg', '.png');
@@ -44,29 +45,31 @@ if(!isset($_SESSION['pseudo']) OR !isset($_SESSION['id'])){
 
           // RECHERCHE DES ERREURS
 
-          if(!is_uploaded_file($a_doss)){
-            $erreurs[0]= 'Erreur lors du téléchargement de l\'avatar.';
-          }elseif(!in_array($a_xt, $xt_autorise)){
-            $erreurs[0]= 'Format acceptés : JPEG et PNG';
-          }elseif($a_size > 1048576){
-            $erreurs[0]= 'Image trop lourde (max 1Mo)';
-          }else{
-            list($a_w, $a_h)=getimagesize($a_doss);
-            $ratioImg=$a_w/$a_h;
-            $wmax=150;
-            $hmax=180;
-            if($wmax/$hmax > $ratioImg){
-              $wmax=$hmax*$ratioImg;
+          if($a_error!=4){
+            if(!is_uploaded_file($a_doss)){
+              $erreurs[0]= 'Erreur lors du téléchargement de l\'avatar.';
+            }elseif(!in_array($a_xt, $xt_autorise)){
+              $erreurs[0]= 'Format acceptés : JPEG et PNG';
+            }elseif($a_size > 1048576){
+              $erreurs[0]= 'Image trop lourde (max 1Mo)';
             }else{
-              $hmax=$wmax/$ratioImg;
-            }
+              list($a_w, $a_h)=getimagesize($a_doss);
+              $ratioImg=$a_w/$a_h;
+              $wmax=150;
+              $hmax=180;
+              if($wmax/$hmax > $ratioImg){
+                $wmax=$hmax*$ratioImg;
+              }else{
+                $hmax=$wmax/$ratioImg;
+              }
 
-            $src=imagecreatefromstring(file_get_contents($a_doss));
-            $min=imagecreatetruecolor($wmax, $hmax);
-            $path='min/'.time().'.png';
-            imagecopyresampled($min, $src, 0,0,0,0,$wmax,$hmax,$a_w,$a_h);
-            imagepng($min, $path);
-            $req=$bdd->query('UPDATE profils SET avatar="'.$path.'" WHERE id_profil='.$_SESSION['id']);
+              $src=imagecreatefromstring(file_get_contents($a_doss));
+              $min=imagecreatetruecolor($wmax, $hmax);
+              $path='min/'.time().'.png';
+              imagecopyresampled($min, $src, 0,0,0,0,$wmax,$hmax,$a_w,$a_h);
+              imagepng($min, $path);
+              $req=$bdd->query('UPDATE profils SET avatar="'.$path.'" WHERE id_profil='.$_SESSION['id']);
+            }
           }
 
           if(!empty($prenom) AND !preg_match('#^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]{2,20}$#i', $prenom)){
